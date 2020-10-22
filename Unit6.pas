@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, AdvMemo, ExtCtrls, dglOpenGL, mswheel,Math, Menus, AdvToolBar,
+  Dialogs, AdvMemo, ExtCtrls, mswheel,Math, Menus, AdvToolBar,
   StdCtrls, AdvMenus, AdvSmoothPanel, ComCtrls, Grids, AdvObj, BaseGrid,
   AdvGrid, DBAdvGrid, DBAdvMemo;
 
@@ -91,8 +91,8 @@ var
   Dragpoint:TPoint;
   STRINGS:TStrings; {сюда будет загружатьс€ список}
 
-      cnt1, cnt2: GLfloat;              // Pro pohyb a barvu textu
-    base: GLuint;                     // »нslo zбkladnнho display listu znakщ
+      //cnt1, cnt2;              // Pro pohyb a barvu textu
+   // base: GLuint;                     // »нslo zбkladnнho display listu znakщ
       h_Dc: HDC;                        // Privбtnн GDI Device Context
 implementation
 
@@ -197,27 +197,7 @@ end;
 
 procedure TForm6.FormCreate(Sender: TObject);
 begin
-  {»Ќ»÷»јЋ»«ј÷»я OPENGL}
- {===============================OpenGL======================}
-   // пермещение экрана
-    PerenosX6 := -2100;
-    PerenosY6 := 800;
-    ZoomX6 := 0.0004 ;
-    ZoomY6 := 0.0010;
- {===========================================================}
-  {http://www.opengl.org.ru/delphi/opengl_delphi_vvedenie.html}
-  dc := GetDC(pnl1.Handle);     // получение контекста панели
-  rc := CreateRenderingContext(dc,[opDoubleBuffered],32,24,0,0,0,0);
-  ActivateRenderingContext(dc,rc);     // активаци€ контекста
-  glClearColor(1, 1, 1,1);  // цвет фона
-  glClear(GL_COLOR_BUFFER_BIT);   // очистка буфера цвета
-  //glViewport(0,0,DrawPanel.ClientWidth,DrawPanel.ClientHeight);
-  glScalef (ZoomX6, ZoomY6, 1.0); // масштаб
-  glTranslatef(PerenosX6,PerenosY6,0);      // пермещение экрана
-  glLineWidth(0.5);  // толщина линий
-  GL_TIMER6.Enabled := True;
-  STRINGS := TStrings.Create; {сюда будет загружатьс€ список}
-
+  
 
 
   {-----------------}

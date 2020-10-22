@@ -16,7 +16,7 @@ type
 implementation
 
 uses
-  main, DeskWinController, DeskWinAPIDll;
+  main;
 
 { Important: Methods and properties of objects in visual components can only be
   used in a method called using Synchronize, for example,

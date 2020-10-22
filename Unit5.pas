@@ -36,7 +36,6 @@ begin
   frmMain.tbltemp.Edit;
   frmMain.tbltemp.Fields[1].Assign(Memo1.Lines);
   frmMain.tbltemp.Post;
-  frmMain.createprogram;
   Close;
 end;
 
@@ -46,7 +45,7 @@ begin
   frmMain.tbltemp.Edit;
   frmMain.tbltemp.Fields[1].Assign(Memo1.Lines);
   frmMain.tbltemp.Post;
-  frmMain.createprogram;
+
 end;
 
 end.
