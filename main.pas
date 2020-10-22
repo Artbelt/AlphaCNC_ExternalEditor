@@ -6,13 +6,12 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ComCtrls, ExtCtrls, IniFiles, Buttons, Math,
   Menus, ShellAPI, DB, ADODB, iLabel, Grids, AdvObj, BaseGrid, AdvGrid, iSevenSegmentInteger,
-  RzButton, RzEdit, RzSpnEdt, AdvMemo, RzPanel, RzSplit, AppEvnts, dglOpenGL,
-  iComponent, iVCLComponent, iSwitchLed, Mask, AdvGlowButton, ImgList,
+  RzButton, RzEdit, RzSpnEdt, AdvMemo, RzPanel, RzSplit, AppEvnts, iComponent, iVCLComponent, iSwitchLed, Mask, AdvGlowButton, ImgList,
   AdvSmoothPanel, AdvMenus, AdvOfficeButtons, RzRadGrp, RzTrkBar,
   AdvStickyPopupMenu, iPositionComponent, iScaleComponent, iSlider,
   DBClient, RzRadChk, iLed, iLedRound, AdvSmoothStatusIndicator, AdvShape,
   AdvPanel, AdvEdit, jpeg, RzForms, RzCmboBx, RzLabel, AdvSmoothListBox,
-  AdvSmoothComboBox, AdvSmoothButton, iCustomComponent, MY_Font;
+  AdvSmoothComboBox, AdvSmoothButton, iCustomComponent;
 
 type
   TfrmMain = class(TForm)
@@ -34,13 +33,6 @@ type
     G021: TMenuItem;
     G031: TMenuItem;
     DrawPanel: TPanel;
-    tmr4: TTimer;
-    
-    tmr5: TTimer;
-    tmr6: TTimer;
-    tmr7: TTimer;
-    tmr8: TTimer;
-    tmr9: TTimer;
     advmnmn1: TAdvMainMenu;
     N19: TMenuItem;
     N26: TMenuItem;
@@ -88,35 +80,23 @@ type
     ds5: TDataSource;
     RzFormShape1: TRzFormShape;
     AdvSmoothButton1: TAdvSmoothButton;
+    rzfrmshp1: TRzFormShape;
+    img1: TImage;
     procedure Button2Click(Sender: TObject);
     procedure AdvStringGrid1GetEditorType(Sender: TObject; ACol,
       ARow: Integer; var AEditor: TEditorType);
     procedure FormCreate(Sender: TObject);
-    procedure createprogram;
-
-
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-
-
-
     procedure N28Click(Sender: TObject);
     procedure AdvStringGrid1ComboCloseUp(Sender: TObject; ARow,
       ACol: Integer);
     procedure N30Click(Sender: TObject);
-
-    procedure AdvGlowButton7Click(Sender: TObject);
-    procedure N22Click(Sender: TObject);
-    procedure OutText (Litera : PChar);
-    procedure N29Click(Sender: TObject);
-    procedure test1Click(Sender: TObject);
     procedure N35Click(Sender: TObject);
     procedure N36Click(Sender: TObject);
     procedure AdvStringGrid1ClickCell(Sender: TObject; ARow,
       ACol: Integer);
     procedure N37Click(Sender: TObject);
     procedure btn5Click(Sender: TObject);
-
-
     procedure N45Click(Sender: TObject);
     procedure N46Click(Sender: TObject);
     procedure shp2MouseDown(Sender: TObject; Button: TMouseButton;
@@ -130,103 +110,33 @@ type
     procedure N47Click(Sender: TObject);
     procedure N48Click(Sender: TObject);
     procedure N56Click(Sender: TObject);
-
-
     procedure ud1Changing(Sender: TObject; var AllowChange: Boolean);
     procedure pnl13MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure btn18_Click(Sender: TObject);
-
     procedure N62Click(Sender: TObject);
-    procedure N32Click(Sender: TObject);
     procedure AdvSmoothButton1Click(Sender: TObject);
     procedure btn9Click(Sender: TObject);
-
     procedure width_plus;
     procedure width_minus;
-
-
 
   private
     { Private declarations }
 
   public
     { Public declarations }
-    adminstate:Boolean;{права администратора}
-    PROGRAMMA : TStringList; {”ѕ}
-    Jogging: Boolean;
-    Chase: Boolean;
-    CurX, CurY, CurZ, CurA: integer;
-    RPMON: Boolean;
-    FeedOverRide: integer;
-    Limit_X,Limit_Y : Integer; // габариты стола
 
+    PROGRAMMA : TStringList; {”ѕ}
 
     function C1toC2(text:string):string;
 
   end;
 
-type TArrayPoint = array of TPoint; //массив точек
 
-const
-  GLF_START_LIST = 1000;
 
 var
-{============================OpenGL======================}
-  dc, rc: HDC;
-{========================================================}
+
   frmMain: TfrmMain;
-  {parameters from INI-files}
-  EndSPSparameter : Integer;  // скорость конца движени€
-  //StepPerMm : Integer;     // шагов в миллиметре
-  StepPerMm : Real;       // шагов в миллиметре
-  SPSCorrection : Real;  // коррекци€ скорости
-  G00SPS : Integer;       // скорость быстрого хода
-  ActualSpeed : String;      // текуща€ скорость
-  NextSpeed : string;        // следующа€ скорость
-  ini_path : string;  //путь к файлу настроек
-  ini_Accel : integer;  // ускорение
-  ini_MaxSPS : integer;  // максимальна€ скорость
-  ini_StartVel : integer; // стартова€ скорость
-  ini_Scale : Byte;  // масштаб ускорени€
-  init : Boolean;   // инициализирован ли контроллер
-  SLIV : TPoint;   // координаты точки слива
-  First_Home : Boolean; // была ли перва€ установка на 0
-  F_Time : Integer;  // врем€ слива в 0
-  Reverse_X,Reverse_Y ,Reverse_Z, Reverse_A: Boolean; // реверс направлени€ осей
-  {end parameters}
-  ZalivkaPoints : TarrayPoint;
-  NowPoint : TPoint;
-  {==================================}
-  DownMouseMarker : Boolean; // маркер зажати кнопки мыши
-  StartMPos, EndMPos : TPoint;  // переменные дл€ перемещени€ GL картинки
-  PerenosX,PerenosY : Real; // смещение картинки
-  ZoomX,ZoomY : Real; //масштаб картинки
-  {==================================}
-  {переменные дл€ отрисовки}
-  Zoom:Real;
-  ShiftX,ShiftY:Integer;
-  ShiftX_temp,ShiftY_temp:Integer;
-  {end parameters}
-  {координаты текущей точки}
-  Current_Point_X,Current_Point_Y,Current_Point_Z, Current_Point_A :Real;
-  {маркер нажати€ кнопки управлени€ картинкой}
-   DOWN_BUTTON:Boolean;
-   color_p:boolean;
-   {координаты  курсора на DrawPnel}
-   Xmouse,Ymouse : Integer;
-   {координаты OPENGL под курсором}
-   GLX,GLY:Real;
-   {ћаркер активации добавлени€ точки в программу по нажатии на экран}
-   Add_Point_At_End, Add_Point_At_Begin : Boolean;
-   {врем€ начала заливки и конца дл€ добавлени€ в статистику}
-   Start_Time, End_Time : TDateTime;
-   {координаты центра вращающихс€ столов дл€ заливки круглых}
-   Round_table_C1_X, Round_table_C2_X, Round_table_C1_Y, Round_table_C2_Y : Integer;
-   {ѕеременна€ дл€ запоминани€ состо€ни€ ’ и ”}
-   X_STATE,Y_STATE:Integer;
-   {ѕеременна€ дл€ реализации внешнего старта}
-   START_INPUT_CODE:Integer;
 
 implementation
 
@@ -236,23 +146,13 @@ uses
 
 {$R *.dfm}
 
-{======================================================================= }
-{¬ывод текста подписи к картинке}
-procedure TFrmmain.OutText (Litera : PChar);
-begin                          
-  glListBase(GLF_START_LIST);
-  glCallLists(Length (Litera), GL_UNSIGNED_BYTE, Litera);
-end;
-{======================================================================= }
-
-
 procedure TFrmmain.width_plus;
   var x:Integer;
 begin
 
   if frmMain.Width <> 386 then
   begin
-     frmMain.Width := 386
+     frmMain.Width := 370;
   end;
 
 end;
@@ -263,7 +163,7 @@ begin
 
   if frmMain.Width <> 266 then
   begin
-     frmMain.Width := 266
+     frmMain.Width := 200;
   end;
 
 end;
@@ -289,49 +189,6 @@ function tfrmMain.C1toC2(text:string):string;
 begin
 
 end;  
-
-procedure tfrmMain.createprogram;
-var
-  x,SC:Integer;
-  a:Integer;//остаток от делени€ на 2 - маркер четности номера заливки
-begin
-  PROGRAMMA.Clear;
-  PROGRAMMA.Add('M07');
-  PROGRAMMA.Add('M03');
-  PROGRAMMA.Add('G04 P'+IntTOSTr(F_Time));
-  PROGRAMMA.Add('M05');
-  tbltemp.First;
-  SC :=  tbltemp.RecordCount-1;
-
-    //проста€ верси€ добавлени€ всех форм в программу
-      for x := 0 to SC do
-      begin
-        if (tbltemp.Fields[1].AsString <> '')and(tbltemp.Fields[2].AsBoolean<>True) then  PROGRAMMA.Add(tbltemp.Fields[1].AsString);
-        tbltemp.Next;
-      end;
-    //--конец--простой версии
-
-
-
-  PROGRAMMA.Add('');
-  PROGRAMMA.Add('G00 X'+IntToSTr(SLIV.X)+' Y'+IntToSTr(SLIV.Y));
-  PROGRAMMA.Add('M02');
-  PROGRAMMA.Text := StringReplace(PROGRAMMA.Text,'x','X',[rfReplaceAll]);
-  PROGRAMMA.Text := StringReplace(PROGRAMMA.Text,'y','Y',[rfReplaceAll]);
-  PROGRAMMA.Text := StringReplace(PROGRAMMA.Text,'g','G',[rfReplaceAll]);
-  PROGRAMMA.Text := StringReplace(PROGRAMMA.Text,'p','P',[rfReplaceAll]);
-  PROGRAMMA.Text := StringReplace(PROGRAMMA.Text,'i','I',[rfReplaceAll]);
-  PROGRAMMA.Text := StringReplace(PROGRAMMA.Text,'j','J',[rfReplaceAll]);
-  PROGRAMMA.Text := StringReplace(PROGRAMMA.Text,'f','F',[rfReplaceAll]);
-  PROGRAMMA.Text := StringReplace(PROGRAMMA.Text,'m','M',[rfReplaceAll]);
-      {изменение точек на системный разделитель дробной части}
-  PROGRAMMA.Text := StringReplace(PROGRAMMA.Text,'.',DecimalSeparator,[rfReplaceAll]);
-  PROGRAMMA.Text := StringReplace(PROGRAMMA.Text,',',DecimalSeparator,[rfReplaceAll]);
-
-end;
-
-
-
 
 procedure TfrmMain.Button2Click(Sender: TObject);
 begin
@@ -417,12 +274,6 @@ begin
  Left :=0;
  Top :=0;
 
-{отрисовка заставки}
-//splashForm.Show; //окно отображаетс€ немодальным
-// splashForm.Repaint; //метод, заставл€ющий осуществить
-
-
-
 
   AdvStringGrid1.ColWidths[1] :=40;
 
@@ -446,8 +297,6 @@ begin
   {try PROGRAMMA.LoadFromFile(ExtractFilePath(Application.Exename)+'TEMP.DNC')
   except  ShowMessage('Can not load TEMP.DNC')
   end;}
-  createprogram;
-
 
   {загрузка TEMP.GRD}
   try  AdvStringGrid1.LoadFromFile(ExtractFilePath(Application.Exename)+'TEMP.GRID')
@@ -536,8 +385,7 @@ begin
       tbltemp.Fields[1].AsString := '';
       tbltemp.Post;
     end;
-  createprogram;
-  
+
   {«апись состо€ни€ GRID}
    AdvStringGrid1.SaveToFile(ExtractFilePath(Application.Exename)+'TEMP.GRID');
 
@@ -572,66 +420,6 @@ end;
 
 
 
-
-procedure TfrmMain.AdvGlowButton7Click(Sender: TObject);
-var
-  x,z:Integer;
-  stroka:string;
-  sostav : string; {состав заливки дл€ статистики}
-  form_count : Integer;
-  date1,date2:TDateTime;
-  Parameter:TParameter;
-  forms:string;
-  count : Integer;
-  summa : Integer;
-  Form_list :TStringList;
-  a:Integer;//остаток от делени€ на 2 - маркер четности номера заливки
-begin
-   createprogram;
-
-end;
-
-procedure TfrmMain.N22Click(Sender: TObject);
-begin
-  Form6 := TForm6.Create(self);
-end;
-
-procedure TfrmMain.N29Click(Sender: TObject);
-begin
-  ShellExecute(Application.Handle,PChar('open'),PChar('view.exe'),Nil,Nil,SW_SHOW);
-end;
-
-procedure TfrmMain.test1Click(Sender: TObject);
-var sostav : string;
-z : Integer;
-form_count : Integer;
-begin
-   sostav := '';
-   form_count := 0;
-      {блок отправки статистики}
-      for z := 1 to AdvStringGrid1.RowCount-1 do
-      begin
-        if AdvStringGrid1.Cells[1,z] <> '' then
-        begin
-          if AdvStringGrid1.Colors[1,z] <> clRed then
-          begin
-            sostav := sostav + AdvStringGrid1.Cells[1,z] +#13#10;
-            form_count := form_count + 1;
-          end;
-        end;
-      end;
-   Start_Time := Now;
-   Sleep(Random(3000));
-   End_Time := Now;
-   tblStat.Append;
-   tblStat.Fields[0].AsDateTime := Now;
-   tblStat.Fields[2].AsDateTime := Start_Time;
-   tblStat.Fields[4].AsString := sostav;
-   tblStat.Fields[3].AsDateTime := End_Time;
-   tblStat.Fields[6].AsInteger := form_count;
-   tblStat.Fields[7].AsDateTime := End_Time - Start_Time;
-   tblStat.Post;
-end;
 
 procedure TfrmMain.N35Click(Sender: TObject);
 var
@@ -691,7 +479,7 @@ begin
     //else ShowMessage('0 '+IntToStr(x));
   end;
   SendMessage(AdvStringGrid1.Handle,WM_KEYDOWN,VK_ESCAPE,0);
-  createprogram;
+
 end;
 
 procedure TfrmMain.AdvStringGrid1ClickCell(Sender: TObject; ARow,
@@ -765,7 +553,7 @@ begin
   tbltemp.Edit;
   tbltemp.Fields[2].AsBoolean := True;
   tbltemp.Post;
-  createprogram;
+
 end;
 
 procedure TfrmMain.N46Click(Sender: TObject);
@@ -776,7 +564,7 @@ begin
   tbltemp.Edit;
   tbltemp.Fields[2].AsBoolean := False;
   tbltemp.Post;
-  createprogram;
+
 end;
 
 procedure TfrmMain.shp2MouseDown(Sender: TObject; Button: TMouseButton;
@@ -837,9 +625,6 @@ begin
   tbltemp.Fields[1].Assign(txt);
   tbltemp.Post;
   txt.Free;
-  createprogram;
-
-  
 
 end;
 
@@ -864,7 +649,7 @@ begin
     end;
     tbltemp.Next;
   end;
-   createprogram;
+
 end;
 
 procedure TfrmMain.N48Click(Sender: TObject);
@@ -882,7 +667,7 @@ begin
     tbltemp.Post;
     tbltemp.Next;
   end;
-   createprogram;
+
 
 end;
 
@@ -939,15 +724,6 @@ begin
     end;
     PROGRAMMA.Clear;
   end;
-
-
-end;
-
-procedure TfrmMain.N32Click(Sender: TObject);
-var
-  a:string;
-begin
-
 
 
 end;
