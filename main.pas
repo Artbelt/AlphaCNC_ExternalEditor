@@ -127,12 +127,7 @@ type
     { Public declarations }
 
     PROGRAMMA : TStringList; {УП}
-
-    function C1toC2(text:string):string;
-
   end;
-
-
 
 var
 
@@ -141,7 +136,7 @@ var
 implementation
 
 uses
- Unit1, Unit2, Unit3, Unit5,
+ Unit1, Unit5,
   Unit4, Unit6;
 
 {$R *.dfm}
@@ -160,7 +155,7 @@ end;
 procedure TFrmmain.width_minus;
   var x:Integer;
 begin
-
+  //Скрываем правую панель окна
   if frmMain.Width <> 266 then
   begin
      frmMain.Width := 200;
@@ -168,32 +163,12 @@ begin
 
 end;
 
-{------------------------------------------------------------------------------}
-{                                                                              }
-{------------------------------------------------------------------------------}
-
-function FindX(text:string):Real;
-
-begin
-
-end;
-
-function FindY(text:string):Real;
-
-begin
-
-end;
-
-function tfrmMain.C1toC2(text:string):string;
-
-begin
-
-end;  
 
 procedure TfrmMain.Button2Click(Sender: TObject);
 begin
-pnl13.Visible :=False;
-width_minus;
+  //Скрываем правую панель окна
+  pnl13.Visible :=False;
+  width_minus;
 end;
 
 procedure TfrmMain.AdvStringGrid1GetEditorType(Sender: TObject; ACol,
@@ -203,8 +178,10 @@ var
 begin
   with AdvStringGrid1 do
   begin
+    {если столбец место, то}
    if  ACol=0 then
     begin
+      {создаем и заполняем выпадающий список из ячейки местами стола}
       aEditor := edComboList;
       ClearComboString;
       ComboBox.Items.Add('');
@@ -222,25 +199,35 @@ begin
       ComboBox.Items.Add('12');
       ComboBox.Items.Add('13');
       ComboBox.Items.Add('14');
+      ComboBox.Items.Add('15');
+      ComboBox.Items.Add('16');
+      ComboBox.Items.Add('17');
       ComboBox.Items.Add('s1');
       ComboBox.Items.Add('s2');
     end;
+    {если столбец форма, то}
     if Acol=1 then
     begin
+      {создаем выпадающий список}
       aEditor := edComboList;
       ClearComboString;
+      {переход к первой записи}
       tblmain.First;
+      {сортировка таблицы}
       tblmain.Sort := 'Form ASC';
+      {для всей таблицы main делаем}
       for x:=0 to tblmain.RecordCount-1 do
+      {если ячейка AdvStrinGrid[0,...] не пустая...}
       begin if AdvStringGrid1.Cells[0,row] <> '' then
          begin
-           if tblmain.FieldByName(AdvStringGrid1.Cells[0,row]).AsString <>''
-           then ComboBox.Items.Add(tblmain.Fields[0].AsString)
+            {если в таблице main поле с именем (1,2,...17) не пустое, то в выпадающий список добавляем номер фильтра}
+           if tblmain.FieldByName(AdvStringGrid1.Cells[0,row]).AsString <>'' then ComboBox.Items.Add(tblmain.Fields[0].AsString)
          end;
+         {переход к следующей записи}
         tblmain.Next;
       end;
     end;
-   if  ACol=2 then
+   if  ACol=2 then   {3 столлбец таблицы сейчас не задействован}
     begin
       aEditor := edComboList;
       ClearComboString;
@@ -260,6 +247,8 @@ begin
       ComboBox.Items.Add('13');
       ComboBox.Items.Add('14');
       ComboBox.Items.Add('15');
+      ComboBox.Items.Add('16');
+      ComboBox.Items.Add('17');
     end;
   end;
 end;
@@ -271,8 +260,8 @@ var
   Count_TXT : TextFile;
   x:Integer;
 begin
- Left :=0;
- Top :=0;
+ Left :=10;
+ Top :=10;
 
 
   AdvStringGrid1.ColWidths[1] :=40;
@@ -289,32 +278,24 @@ begin
     tbltemp.Next;
   end;
 
-
-
   {создание списка-программы}
   PROGRAMMA := TStringList.Create;
-  {загрузка TEMP.DNC}
-  {try PROGRAMMA.LoadFromFile(ExtractFilePath(Application.Exename)+'TEMP.DNC')
-  except  ShowMessage('Can not load TEMP.DNC')
-  end;}
 
   {загрузка TEMP.GRD}
   try  AdvStringGrid1.LoadFromFile(ExtractFilePath(Application.Exename)+'TEMP.GRID')
-  except  begin
-            ShowMessage('Can not load TEMP.GRID');
-            AdvStringGrid1.DefaultColWidth := 83;
-            end;
+  except
+    begin
+       ShowMessage('Can not load TEMP.GRID');AdvStringGrid1.DefaultColWidth := 83;
+    end;
   end;
 
-
-    AdvStringGrid1.Cells[0,0]:='Стол';
+  //Пишем заголовки таблице
+  AdvStringGrid1.Cells[0,0]:='Стол';
   AdvStringGrid1.Cells[1,0]:='Фильтр';
 
+  //скрываем правую часть окна
   width_minus;         
 end;
-
-
-
 
 procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 var
@@ -357,9 +338,8 @@ end;
 
 procedure TfrmMain.AdvStringGrid1ComboCloseUp(Sender: TObject; ARow,
   ACol: Integer);
-var
-  bm : TBitmap;
 begin
+     {если открывеам ячейку в столбце фильтр}
     if AdvStringGrid1.Col=1 then
     begin
       if tblmain.Locate('form',AdvStringGrid1.Cells[AdvStringGrid1.Col,AdvStringGrid1.row],[loCaseInsensitive, loPartialKey]) then
@@ -375,18 +355,21 @@ begin
         end
       else //ShowMessage('Can not locate "form" '+AdvStringGrid1.Cells[AdvStringGrid1.Col,AdvStringGrid1.row]);
     end;
-
+   {если открывеам ячейку в столбце место}
     if AdvStringGrid1.Col=0 then
     begin
-      {при смене номера места очищается окно номера формы}
+      {при смене номера места очищается окно номера формы}  {а так  же поля таблицы темп}
       AdvStringGrid1.Cells[1,AdvStringGrid1.Row]:='';
       tbltemp.RecNo := AdvStringGrid1.Row;
       tbltemp.Edit;
       tbltemp.Fields[1].AsString := '';
+      tbltemp.Fields[2].AsBoolean := True;                                         // 12.10.2020
+      tbltemp.Fields[3].AsString := '';                                         // 12.10.2020
       tbltemp.Post;
     end;
 
-  {Запись состояния GRID}
+
+   {Запись состояния GRID}
    AdvStringGrid1.SaveToFile(ExtractFilePath(Application.Exename)+'TEMP.GRID');
 
 end;
@@ -418,13 +401,11 @@ begin
   end;
 end;
 
-
-
-
 procedure TfrmMain.N35Click(Sender: TObject);
 var
   x : Integer;
   temp : string;
+  temp_logic : Boolean;
 begin
   for x := AdvStringGrid1.RowCount - 1 downto AdvStringGrid1.Row do
   begin
@@ -444,12 +425,43 @@ begin
       tbltemp.Edit;
       tbltemp.Fields[1].AsString := temp;
       tbltemp.Post;
+      //---start--------------------12.10.2020----------
+      temp_logic := tbltemp.Fields[2].AsBoolean;
+      tbltemp.Edit;
+      tbltemp.Fields[2].AsBoolean := True;
+      tbltemp.Post;
+      tbltemp.RecNo := x + 1;
+      tbltemp.Edit;
+      tbltemp.Fields[2].AsBoolean := temp_logic;
+      tbltemp.Post;
+      temp := tbltemp.Fields[3].AsString;
+      tbltemp.Edit;
+      tbltemp.Fields[3].AsString := '';
+      tbltemp.Post;
+      tbltemp.RecNo := x + 1;
+      tbltemp.Edit;
+      tbltemp.Fields[3].AsString := temp;
+      tbltemp.Post;
+      //---end-------------------12.10.2020-----------
     end ;
     //else ShowMessage('0 '+IntToStr(x));
+     end;
 
-  end;
+    //сдвиг красной полосы:
+    for x := 0 to AdvStringGrid1.RowCount-10 do
+    begin
+      AdvStringGrid1.Colors[0,x]:= clWindow;
+      AdvStringGrid1.Colors[1,x]:= clWindow;
+      tbltemp.RecNo := AdvStringGrid1.Row;
+    end;
+    tbltemp.FindFirst;
+    for x := 0 to tbltemp.RecordCount-1 do
+    begin
+      if tbltemp.Fields[2].AsBoolean = False then begin AdvStringGrid1.Colors[0,x]:= clRed; AdvStringGrid1.Colors[1,x]:= clRed; end;
+      if x <> tbltemp.RecordCount-2 then begin tbltemp.FindNext; end;
+    end;
 
-
+  SendMessage(AdvStringGrid1.Handle,WM_KEYDOWN,VK_ESCAPE,0);
 end;
 
 procedure TfrmMain.N36Click(Sender: TObject);
@@ -480,12 +492,12 @@ begin
   end;
   SendMessage(AdvStringGrid1.Handle,WM_KEYDOWN,VK_ESCAPE,0);
 
+
 end;
 
 procedure TfrmMain.AdvStringGrid1ClickCell(Sender: TObject; ARow,
   ACol: Integer);
 begin
-
 //AdvStringGrid1.DefaultColWidth := 50;
 end;
 
@@ -653,7 +665,9 @@ begin
 end;
 
 procedure TfrmMain.N48Click(Sender: TObject);
-
+{==============================================================================}
+{                          Включить все формы                                  }
+{==============================================================================}
 var
   x:Integer;
 begin
@@ -667,8 +681,6 @@ begin
     tbltemp.Post;
     tbltemp.Next;
   end;
-
-
 end;
 
 procedure TfrmMain.N56Click(Sender: TObject);
