@@ -81,7 +81,6 @@ type
     RzFormShape1: TRzFormShape;
     AdvSmoothButton1: TAdvSmoothButton;
     rzfrmshp1: TRzFormShape;
-    img1: TImage;
     procedure Button2Click(Sender: TObject);
     procedure AdvStringGrid1GetEditorType(Sender: TObject; ACol,
       ARow: Integer; var AEditor: TEditorType);
@@ -305,21 +304,85 @@ var
 begin
 
    {ЗАПИСЬ УПРАВЛЯЮЩЕЙ ПРОГРАММЫ}
-   AssignFile(f, ExtractFilePath(Application.Exename)+'TEMP.DNC'); {Assigns the Filename}
-   Rewrite(f); {Opens the file for editing}
+   {Assigns the Filename}
+   {AssignFile(f, ExtractFilePath(Application.Exename)+'TEMP.DNC');}
+   {Opens the file for editing}
+   {Rewrite(f);
    Writeln(f,'');
    for x := 0 to PROGRAMMA.Count - 1 do
    begin
      Writeln(f,PROGRAMMA[x]);
    end;
-   Closefile(f); {Closes file F}
+   Closefile(f); }{Closes file F}
 
 
    {Запись состояния GRID}
    AdvStringGrid1.SaveToFile(ExtractFilePath(Application.Exename)+'TEMP.GRID');
 
+   
+    {Становимся в начало таблицы темп}
+    if  tbltemp.FindFirst then
+    begin
+        {Запускаем цикл для обхода списка AdvStringGrid1}
+        for  x:=0 to AdvStringGrid1.RowCount-1 do
+        begin
+                {
+                1.Подряд по списку проходим
+                2.Если ряд пуст - заносим пустые значения в темп таблицу
+                3.Если ряд не пуст - заносим код в таблицу темп, находя его в таблице мэйн
+                }
+
+                {если пустая строка в таблице или одно из полей пустое, то просто пустые данные записываем в темп}
+                if (AdvStringGrid1.Cells[0,x+1] = '') or (AdvStringGrid1.Cells[1,x+1] = '') then
+                begin
+                    tbltemp.RecNo := x+1;
+                    tbltemp.Edit;
+                    tbltemp.Fields[1].AsString := '';
+                    tbltemp.Fields[2].AsBoolean := False;                                         // 12.10.2020
+                    tbltemp.Fields[3].AsString := '';                                         // 12.10.2020
+                    tbltemp.Post;
+                end
+                {если строка не пустая}
+                else
+                begin
+                    tbltemp.RecNo := x+1;
+
+                    {открываем редактирование}
+                    tbltemp.Edit;
+
+                    {ищем в tblMain столбце "form" значение формы, выбранной в ячейке списка, и ставим курсор в эту запись}
+                    tblmain.Locate('form',AdvStringGrid1.Cells[1,x+1],[loCaseInsensitive, loPartialKey]);
+
+                    {в ячейку "код" записываем из tblMain[x] код заливки, извлекая его: }
+                    tbltemp.Fields[1].AsString := tblmain.FieldByName(AdvStringGrid1.Cells[0,x+1]).AsString;
+
+                    {если круглая форма s1, то добавляем в табл. temp запись s1}
+                    if  AdvStringGrid1.Cells[0,AdvStringGrid1.row] = 's1' then tbltemp.Fields[3].AsString := 's1';
+
+                    {если круглая форма s2, то добавляем в табл. temp запись s2}
+                    if  AdvStringGrid1.Cells[0,AdvStringGrid1.row] = 's2' then tbltemp.Fields[3].AsString := 's2';
+
+                    {если не круглая форма , то добавляем в табл. temp запись пустую}
+                    if  ((AdvStringGrid1.Cells[0,AdvStringGrid1.row] <> 's1') and (AdvStringGrid1.Cells[0,AdvStringGrid1.row] <> 's2')) then
+                         tbltemp.Fields[3].AsString := '';
+
+                    {применяем изменения}
+                    tbltemp.Post;
+
+                end;
+
+                {если мы не подошли к концу списка, переходим на следующую запись}
+
+            if (x <> AdvStringGrid1.RowCount-1) then tbltemp.FindNext ;
+
+        end;
+
+    end    else ShowMessage('FindFirst f#@%&#g wrong!');
+
+
    {создание списка-программы}
-   PROGRAMMA.Free;
+   //PROGRAMMA.Free;
+
    {Разрешение закрыть программу}
    CanClose := true;
 end;
